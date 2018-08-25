@@ -1,15 +1,15 @@
 =begin
-  title  Font class (redefined)
+  title  Font class (redefined-3)
   
   author jubin-park
-  date   2016.10.02
-  syntax ruby 1.8.7
+  date   2018.07.14
+  syntax ruby
   pltfrm Neko Player
   
   refer  https://raw.githubusercontent.com/Yangff/OpenRGSS-1/master/lib/openrgss/font.rb
 =end
 #===============================================================================
-if $NEKO_RUBY == 187 && RGSS.is_mobile?
+if [187, 192].include?($NEKO_RUBY) && RGSS.is_mobile?
 #-------------------------------------------------------------------------------
 class Font
   
@@ -24,21 +24,39 @@ class Font
   # key   : name, size
   # value : SDL::TTF
   @@cache = {}
-  
+
   def self.init
+    # `Couldn't open font .. Library not initialized' Error Patch
+    SDL::TTF.init()
     # 1. 기본 폰트
-    default_font_file = "/sdcard/KernysRGSS/font.ttf"
-    if FileTest.exist?(default_font_file)
-      # 폰트 로드
-      ttf = SDL::TTF.open(default_font_file, 1)
+    # 커스텀 폰트부터 우선검색, 먀지막 인덱스는 숨겨진 기본 폰트
+    default_font_file = ["font.ttf", "/sdcard/KernysRGSS/font.ttf", "NanumGothic.mp3"]
+    for i in 0..2
+      if FileTest.exist?(default_font_file[i])
+        pass = i
+        break
+      end
+      pass = -1 if i == 2
+    end
+    # pass 가 -1인 경우 NanumGothic.mp3가 숨겨진 파일이라 검색이 안되지만,
+    # open 함수로 발견이 될 수도 있으니 검색 시도한다.
+    if pass == 0
+      ttf = SDL::TTF.open(File.expand_path("") + "/" + default_font_file[pass], 1) rescue nil
+    else
+      ttf = SDL::TTF.open(default_font_file[pass], 1) rescue nil
+    end
+    # 숨겨진 기본 폰트(NanumGothic.mp3)도 없는 최악의 경우
+    if ttf.nil?
+      SDL.showAlert("There is no \"#{default_font_file[pass]}\" file.")
+    else
       # 이름 + 스타일 취득 및 가공
       name = ttf.familyName + (ttf.styleName.capitalize == "Regular" ? "" : " " + ttf.styleName.capitalize)
       # 기본 폰트로 등록
       @name = name
       # 리스트에 추가
-      @@fonts_list[name] = default_font_file
+      @@fonts_list[name] = default_font_file[pass]
       # 따로 저장
-      @@sdcard_font = [name, default_font_file]
+      @@sdcard_font = [name, default_font_file[pass]]
       # 닫음
       ttf.close if !ttf.closed?
     end
@@ -90,7 +108,7 @@ class Font
     begin
       result = ( @@cache[[@name, @size]] ||= SDL::TTF.open(@@fonts_list[@name], @size) )
     rescue
-      result = ( @@cache[[@name, @size]] ||= SDL::TTF.open("/sdcard/KernysRGSS/font.ttf", @size) )
+      result = ( @@cache[[@name, @size]] ||= SDL::TTF.open("NanumGothic.mp3", @size) )
     end
     result.style = (@bold ? SDL::TTF::STYLE_BOLD : 0) | (@italic ? SDL::TTF::STYLE_ITALIC : 0)
     return result

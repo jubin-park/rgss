@@ -24,17 +24,17 @@ FindWindow              = Win32API.new('user32', 'FindWindow', 'pp', 'l')
 class String
   CP_UTF8 = 65001
   def to_unicode
-		len = MultiByteToWideChar.call(CP_UTF8, 0, self, -1, 0, 0) << 1
-		buf = 0.chr * len
-		MultiByteToWideChar.call(CP_UTF8, 0, self, -1, buf, len)
-		return buf
-	end
-	def to_UTF8
-		len = WideCharToMultiByte.call(CP_UTF8, 0, self, -1, 0, 0, 0, 0)
-		buf = 0.chr * len
-		WideCharToMultiByte.call(CP_UTF8, 0, self, -1, buf, len, 0, 0)
-		return buf
-	end
+    len = MultiByteToWideChar.call(CP_UTF8, 0, self, -1, 0, 0) << 1
+    buf = 0.chr * len
+    MultiByteToWideChar.call(CP_UTF8, 0, self, -1, buf, len)
+    return buf
+  end
+  def to_UTF8
+    len = WideCharToMultiByte.call(CP_UTF8, 0, self, -1, 0, 0, 0, 0)
+    buf = 0.chr * len
+    WideCharToMultiByte.call(CP_UTF8, 0, self, -1, buf, len, 0, 0)
+    return buf
+  end
 end
 
 module MB

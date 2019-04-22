@@ -40,6 +40,8 @@ module NekoConsole
   module_function
 
   def init
+    SDL::TTF.init
+        
     @q_content = Array.new
     @q_log = Array.new
     @phase = 0

@@ -1,5 +1,5 @@
 =begin
-  title  InternetGetConnectedState
+  title  inet_connected
  
   author jubin-park
   refer  MSDN

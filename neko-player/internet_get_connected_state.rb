@@ -2,21 +2,16 @@
   title  InternetGetConnectedState
  
   author jubin-park
-  refer  ruby-doc.org
   date   2016.11.06
+         2019.07.05
   syntax ruby
   pltfrm neko player
 =end
 #===============================================================================
-if [187, 192].include?($NEKO_RUBY) && RGSS.is_mobile?
+if [187, 192].include?($NEKO_RUBY)
 #-------------------------------------------------------------------------------
 def inet_connected?
-  begin
-    sc = TCPSocket.open("www.google.com", 80)
-    sc.peeraddr.is_a?(Array)
-  rescue SocketError
-    false
-  end
+  SDL::Net.gethostbyname("www.google.com") != nil
 end
 #-------------------------------------------------------------------------------
 end

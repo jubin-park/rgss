@@ -173,7 +173,7 @@ def s2u(text)
   len = WideCharToMultiByte.call(65001, 0, buf, -1, nil, 0, nil, nil)
   ret = '\0' * len
   WideCharToMultiByte.call(65001, 0, buf, -1, ret, ret.size, nil, nil)
-  return ret.delete('\000')
+  return ret.delete("\0")
 end
 #-------------------------------------------------------------------------------
 end
